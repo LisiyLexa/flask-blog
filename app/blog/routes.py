@@ -20,7 +20,24 @@ def index():
     return render_template("blog/index.html", news=news)
 
 
-@blog_bp.route("/post/<news_code>", methods=["GET", "POST"])
+@blog_bp.route("/post/<news_code>", methods=["GET"])
+def view_post(news_code):
+    db_sess = create_session()
+    news = (
+        db_sess.query(News)
+        .filter(
+            News.news_code == news_code,
+            (News.user == current_user) | (News.is_private != True),
+        )
+        .first()
+    )
+    if news:
+        return render_template("blog/view_post.html", post=news)
+    else:
+        abort(404)
+
+
+@blog_bp.route("/edit/<news_code>", methods=["GET", "POST"])
 @login_required
 def edit_post(news_code):
     form = NewsForm()
