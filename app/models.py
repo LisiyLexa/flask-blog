@@ -36,6 +36,17 @@ class News(SqlAlchemyBase):
 
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
     user = orm.relationship("User")
+    categories = orm.relationship("Category", secondary="association", backref="news")
+
+
+association_table = sqlalchemy.Table(
+    "association",
+    SqlAlchemyBase.metadata,
+    sqlalchemy.Column("news", sqlalchemy.Integer, sqlalchemy.ForeignKey("news.id")),
+    sqlalchemy.Column(
+        "category", sqlalchemy.Integer, sqlalchemy.ForeignKey("category.id")
+    ),
+)
 
 
 class Category(SqlAlchemyBase):
